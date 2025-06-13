@@ -1,5 +1,54 @@
 from tkinter import *
+from tkinter import messagebox
 
+# Login i hasło do aplikacji
+USERNAME = "admin"
+PASSWORD = "password"
+
+def login():
+    entered_username = entry_username.get()
+    entered_password = entry_password.get()
+    if entered_username == USERNAME and entered_password == PASSWORD:
+        login_window.destroy()
+        open_main_app()
+    else:
+        messagebox.showerror("Błąd logowania", "Nieprawidłowy login lub hasło.")
+
+def open_main_app():
+    # Główne okno aplikacji
+    root = Tk()
+    root.title("Aplikacja - Zalogowany")
+    root.geometry("600x400")
+
+    label = Label(root, text="Zalogowano pomyślnie.", font=("Arial", 20))
+    label.pack(pady=100)
+
+    root.mainloop()
+
+# Okno logowania
+login_window = Tk()
+login_window.title("Logowanie")
+login_window.geometry("300x200")
+
+label_login = Label(login_window, text="Logowanie do systemu", font=("Arial", 14))
+label_login.pack(pady=10)
+
+label_username = Label(login_window, text="Nazwa użytkownika")
+label_username.pack()
+entry_username = Entry(login_window)
+entry_username.pack()
+
+label_password = Label(login_window, text="Hasło")
+label_password.pack()
+entry_password = Entry(login_window, show="*")
+entry_password.pack()
+
+button_login = Button(login_window, text="Zaloguj", command=login)
+button_login.pack(pady=10)
+
+login_window.mainloop()
+
+from tkinter import *
 import tkintermapview
 
 users: list = []
