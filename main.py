@@ -101,3 +101,40 @@ class Klient:
         except Exception as e:
             print("Błąd geokodowania klienta:", e)
             return self.biblioteka.coordinates
+# markery
+
+def wyczysc_mape():
+    for marker in wszystkie_markery:
+        marker.delete()
+    wszystkie_markery.clear()
+
+def pokaz_wszystkie_biblioteki():
+    wyczysc_mape()
+    for b in biblioteki:
+        b.marker = map_widget.set_marker(*b.coordinates, text=b.name)
+        wszystkie_markery.append(b.marker)
+
+# listy
+def pokaz_biblioteki():
+    listbox_biblioteki.delete(0, END)
+    combobox_biblioteki.delete(0, END)
+    combobox_biblioteki_klient.delete(0, END)
+    for b in biblioteki:
+        listbox_biblioteki.insert(END, f'{b.name} ({b.city})')
+        combobox_biblioteki.insert(END, f'{b.name} ({b.city})')
+        combobox_biblioteki_klient.insert(END, f'{b.name} ({b.city})')
+    odswiez_liste_mapa()
+
+def pokaz_pracownikow():
+    listbox_pracownicy.delete(0, END)
+    for b in biblioteki:
+        for p in b.pracownicy:
+            listbox_pracownicy.insert(END, f'{p.name} - {b.name}')
+    odswiez_liste_mapa()
+
+def pokaz_klientow():
+    listbox_klienci.delete(0, END)
+    for b in biblioteki:
+        for k in b.klienci:
+            listbox_klienci.insert(END, f'{k.name} - {b.name}')
+    odswiez_liste_mapa()
