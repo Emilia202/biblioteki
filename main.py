@@ -366,3 +366,199 @@ def usun_klienta():
                 pokaz_klientow()
                 return
             licznik += 1
+def pokaz_na_mapie():
+    wyczysc_mape()
+    wybor = listbox_mapa_wybor.curselection()
+    if not wybor:
+        return
+    wybor = listbox_mapa_wybor.get(wybor[0])
+
+    if wybor == "Biblioteki":
+        for b in biblioteki:
+            if b.coordinates:
+                b.marker = map_widget.set_marker(*b.coordinates, text=b.name)
+                wszystkie_markery.append(b.marker)
+
+    elif wybor == "Wszyscy pracownicy":
+        for b in biblioteki:
+            for p in b.pracownicy:
+                if p.coordinates:
+                    p.marker = map_widget.set_marker(*p.coordinates, text=p.name)
+                    wszystkie_markery.append(p.marker)
+
+    elif wybor == "Wszyscy klienci":
+        for b in biblioteki:
+            for k in b.klienci:
+                if k.coordinates:
+                    k.marker = map_widget.set_marker(*k.coordinates, text=k.name)
+                    wszystkie_markery.append(k.marker)
+
+    elif wybor.startswith("Pracownicy - "):
+        nazwa_biblioteki = wybor.replace("Pracownicy - ", "")
+        for b in biblioteki:
+            if b.name == nazwa_biblioteki:
+                for p in b.pracownicy:
+                    if p.coordinates:
+                        p.marker = map_widget.set_marker(*p.coordinates, text=p.name)
+                        wszystkie_markery.append(p.marker)
+
+    elif wybor.startswith("Klienci - "):
+        nazwa_biblioteki = wybor.replace("Klienci - ", "")
+        for b in biblioteki:
+            if b.name == nazwa_biblioteki:
+                for k in b.klienci:
+                    if k.coordinates:
+                        k.marker = map_widget.set_marker(*k.coordinates, text=k.name)
+                        wszystkie_markery.append(k.marker)
+
+
+
+def odswiez_liste_mapa():
+    listbox_mapa_wybor.delete(0, END)
+    listbox_mapa_wybor.insert(END, "Biblioteki")
+    listbox_mapa_wybor.insert(END, "Wszyscy pracownicy")
+    listbox_mapa_wybor.insert(END, "Wszyscy klienci")
+
+    for b in biblioteki:
+        listbox_mapa_wybor.insert(END, f"Pracownicy - {b.name}")
+        listbox_mapa_wybor.insert(END, f"Klienci - {b.name}")
+
+
+# GUI
+
+def show_main_app():
+    global root, map_widget
+    root = Tk()
+    root.geometry("1200x800")
+    root.title('System zarządzania bibliotekami')
+
+    # zakładki
+    notebook = ttk.Notebook(root)
+    notebook.pack(fill="both", expand=True)
+
+    # --- Zakładka 1: Biblioteki ---
+    tab_biblioteki = Frame(notebook)
+    notebook.add(tab_biblioteki, text="Biblioteki")
+
+    frame_left = Frame(tab_biblioteki)
+    frame_left.pack(side=LEFT, fill=BOTH, expand=True, padx=10, pady=10)
+
+    frame_right = Frame(tab_biblioteki)
+    frame_right.pack(side=RIGHT, fill=Y, padx=10, pady=10)
+
+    Label(frame_left, text="Lista bibliotek").pack()
+    global listbox_biblioteki
+    listbox_biblioteki = Listbox(frame_left, width=50, height=20)
+    listbox_biblioteki.pack()
+    Button(frame_left, text="Edytuj", command=edytuj_biblioteke).pack(pady=2)
+    Button(frame_left, text="Usuń", command=usun_biblioteke).pack(pady=2)
+
+    Label(frame_right, text="Dodaj / Edytuj bibliotekę").pack()
+    global entry_biblioteka_nazwa, entry_biblioteka_miasto, entry_biblioteka_ulica, button_dodaj_biblioteke
+    Label(frame_right, text="Nazwa:").pack()
+    entry_biblioteka_nazwa = Entry(frame_right)
+    entry_biblioteka_nazwa.pack()
+    Label(frame_right, text="Miasto:").pack()
+    entry_biblioteka_miasto = Entry(frame_right)
+    entry_biblioteka_miasto.pack()
+    Label(frame_right, text="Ulica i nr domu:").pack()
+    entry_biblioteka_ulica = Entry(frame_right)
+    entry_biblioteka_ulica.pack()
+    button_dodaj_biblioteke = Button(frame_right, text="Dodaj bibliotekę", command=dodaj_biblioteke)
+    button_dodaj_biblioteke.pack(pady=5)
+
+    # --- Zakładka 2: Pracownicy ---
+    tab_pracownicy = Frame(notebook)
+    notebook.add(tab_pracownicy, text="Pracownicy")
+
+    frame_left = Frame(tab_pracownicy)
+    frame_left.pack(side=LEFT, fill=BOTH, expand=True, padx=10, pady=10)
+
+    frame_right = Frame(tab_pracownicy)
+    frame_right.pack(side=RIGHT, fill=Y, padx=10, pady=10)
+
+    Label(frame_left, text="Lista pracowników").pack()
+    global listbox_pracownicy
+    listbox_pracownicy = Listbox(frame_left, width=50, height=20)
+    listbox_pracownicy.pack()
+    Button(frame_left, text="Edytuj", command=edytuj_pracownika).pack(pady=2)
+    Button(frame_left, text="Usuń", command=usun_pracownika).pack(pady=2)
+
+    Label(frame_right, text="Dodaj / Edytuj pracownika").pack()
+    global entry_pracownik_name, combobox_biblioteki, entry_pracownik_city, entry_pracownik_street, button_dodaj_pracownika
+    Label(frame_right, text="Imię i nazwisko:").pack()
+    entry_pracownik_name = Entry(frame_right)
+    entry_pracownik_name.pack()
+    Label(frame_right, text="Biblioteka:").pack()
+    combobox_biblioteki = Listbox(frame_right, height=5, exportselection=False)
+    combobox_biblioteki.pack()
+    Label(frame_right, text="Miasto:").pack()
+    entry_pracownik_city = Entry(frame_right)
+    entry_pracownik_city.pack()
+    Label(frame_right, text="Ulica i nr domu:").pack()
+    entry_pracownik_street = Entry(frame_right)
+    entry_pracownik_street.pack()
+
+    button_dodaj_pracownika = Button(frame_right, text="Dodaj pracownika", command=dodaj_pracownika)
+    button_dodaj_pracownika.pack(pady=5)
+
+    # --- Zakładka 3: Klienci ---
+    tab_klienci = Frame(notebook)
+    notebook.add(tab_klienci, text="Klienci")
+
+    frame_left = Frame(tab_klienci)
+    frame_left.pack(side=LEFT, fill=BOTH, expand=True, padx=10, pady=10)
+
+    frame_right = Frame(tab_klienci)
+    frame_right.pack(side=RIGHT, fill=Y, padx=10, pady=10)
+
+    Label(frame_left, text="Lista klientów").pack()
+    global listbox_klienci
+    listbox_klienci = Listbox(frame_left, width=50, height=20)
+    listbox_klienci.pack()
+    Button(frame_left, text="Edytuj", command=edytuj_klienta).pack(pady=2)
+    Button(frame_left, text="Usuń", command=usun_klienta).pack(pady=2)
+
+    Label(frame_right, text="Dodaj / Edytuj klienta").pack()
+    global entry_klient_name, combobox_biblioteki_klient, entry_klient_city, entry_klient_street, button_dodaj_klienta
+    Label(frame_right, text="Imię i nazwisko:").pack()
+    entry_klient_name = Entry(frame_right)
+    entry_klient_name.pack()
+    Label(frame_right, text="Biblioteka:").pack()
+    combobox_biblioteki_klient = Listbox(frame_right, height=5, exportselection=False)
+    combobox_biblioteki_klient.pack()
+    Label(frame_right, text="Miasto:").pack()
+    entry_klient_city = Entry(frame_right)
+    entry_klient_city.pack()
+    Label(frame_right, text="Ulica i nr domu:").pack()
+    entry_klient_street = Entry(frame_right)
+    entry_klient_street.pack()
+
+    button_dodaj_klienta = Button(frame_right, text="Dodaj klienta", command=dodaj_klienta)
+    button_dodaj_klienta.pack(pady=5)
+
+    # --- Zakładka 4: Mapa ---
+    tab_mapa = Frame(notebook)
+    notebook.add(tab_mapa, text="Mapa")
+
+    frame_top = Frame(tab_mapa)
+    frame_top.pack(side=TOP, fill=X, pady=5)
+
+    Label(tab_mapa, text="Wybierz co pokazać na mapie:").pack()
+
+    global listbox_mapa_wybor
+    listbox_mapa_wybor = Listbox(tab_mapa, height=15, width=40, exportselection=False)
+    listbox_mapa_wybor.pack(pady=10)
+
+    Button(tab_mapa, text="Pokaż na mapie", command=pokaz_na_mapie).pack()
+
+    frame_map = Frame(tab_mapa)
+    frame_map.pack(fill=BOTH, expand=True)
+
+    global map_widget
+    map_widget = tkintermapview.TkinterMapView(frame_map, width=1200, height=500)
+    map_widget.pack(fill=BOTH, expand=True)
+    map_widget.set_position(52.2297, 21.0122)
+    map_widget.set_zoom(6)
+
+    root.mainloop()
