@@ -101,6 +101,7 @@ class Klient:
         except Exception as e:
             print("Błąd geokodowania klienta:", e)
             return self.biblioteka.coordinates
+
 # markery
 
 def wyczysc_mape():
@@ -138,6 +139,7 @@ def pokaz_klientow():
         for k in b.klienci:
             listbox_klienci.insert(END, f'{k.name} - {b.name}')
     odswiez_liste_mapa()
+
 # biblioteki
 
 def dodaj_biblioteke():
@@ -366,6 +368,8 @@ def usun_klienta():
                 pokaz_klientow()
                 return
             licznik += 1
+
+
 def pokaz_na_mapie():
     wyczysc_mape()
     wybor = listbox_mapa_wybor.curselection()
@@ -562,3 +566,34 @@ def show_main_app():
     map_widget.set_zoom(6)
 
     root.mainloop()
+
+# logowanie
+
+def attempt_login():
+    username = entry_login.get()
+    password = entry_password.get()
+    if username in valid_users and valid_users[username] == password:
+        login_window.destroy()
+        show_main_app()
+    else:
+        label_error_login.config(text="Błędny login lub hasło")
+
+# okno logowania
+login_window = Tk()
+login_window.geometry("300x180")
+login_window.title("Logowanie")
+
+Label(login_window, text="Login:").pack(pady=(10, 0))
+entry_login = Entry(login_window)
+entry_login.pack()
+
+Label(login_window, text="Hasło:").pack(pady=(10, 0))
+entry_password = Entry(login_window, show="*")
+entry_password.pack()
+
+label_error_login = Label(login_window, text="", fg="red")
+label_error_login.pack(pady=(5, 0))
+
+Button(login_window, text="Zaloguj", command=attempt_login).pack(pady=(10, 0))
+
+login_window.mainloop()
